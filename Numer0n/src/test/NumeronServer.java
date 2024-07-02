@@ -28,16 +28,15 @@ public class NumeronServer {
             out1.println("あなたはプレイヤー1です。");
             out2.println("あなたはプレイヤー2です。");
 
-            // デバッグメッセージ
             System.out.println("プレイヤー1に数値入力を求めます。");
             int[] answer1 = generateRandomNumber(in1, out1);
             System.out.println("プレイヤー1の入力完了。");
 
-            // デバッグメッセージ
             System.out.println("プレイヤー2に数値入力を求めます。");
             int[] answer2 = generateRandomNumber(in2, out2);
             System.out.println("プレイヤー2の入力完了。");
 
+            //TODOターンの概念をつくる。
             while (true) {
                 if (playRound(in1, out1, answer2, "プレイヤー1")) {
                     break;
