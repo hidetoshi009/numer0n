@@ -28,8 +28,15 @@ public class NumeronServer {
             out1.println("あなたはプレイヤー1です。");
             out2.println("あなたはプレイヤー2です。");
 
+            // デバッグメッセージ
+            System.out.println("プレイヤー1に数値入力を求めます。");
             int[] answer1 = generateRandomNumber(in1, out1);
+            System.out.println("プレイヤー1の入力完了。");
+
+            // デバッグメッセージ
+            System.out.println("プレイヤー2に数値入力を求めます。");
             int[] answer2 = generateRandomNumber(in2, out2);
+            System.out.println("プレイヤー2の入力完了。");
 
             while (true) {
                 if (playRound(in1, out1, answer2, "プレイヤー1")) {
@@ -48,13 +55,13 @@ public class NumeronServer {
     }
 
     private static int[] generateRandomNumber(BufferedReader in, PrintWriter out) throws IOException {
-        out.print("3桁の異なる数字を入力してください: ");
+        out.println("3桁の異なる数字を入力してください: ");
         out.flush();  // フラッシュして即座に送信
         while (true) {
             String input = in.readLine();
             System.out.println("入力を受信: " + input);  // デバッグメッセージ
             if (input.length() != 3 || !input.matches("\\d{3}")) {
-                out.print("無効な入力です。3桁の数字を入力してください: ");
+                out.println("無効な入力です。3桁の数字を入力してください: ");
                 out.flush();  // フラッシュして即座に送信
                 continue;
             }
@@ -74,14 +81,14 @@ public class NumeronServer {
             if (valid) {
                 return number;
             } else {
-                out.print("数字は異なる3桁でなければなりません。再度入力してください: ");
+                out.println("数字は異なる3桁でなければなりません。再度入力してください: ");
                 out.flush();  // フラッシュして即座に送信
             }
         }
     }
 
     private static boolean playRound(BufferedReader in, PrintWriter out, int[] answer, String playerName) throws IOException {
-        out.print(playerName + "のターンです。予想を入力してください: ");
+        out.println(playerName + "のターンです。予想を入力してください: ");
         out.flush();  // フラッシュして即座に送信
         String input = in.readLine();
         System.out.println(playerName + "の入力: " + input);  // デバッグメッセージ
