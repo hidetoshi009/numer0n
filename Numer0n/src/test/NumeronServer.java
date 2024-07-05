@@ -30,21 +30,17 @@ public class NumeronServer {
             out2.println("あなたはプレイヤー2です。");
 
             System.out.println("プレイヤー1に数値入力を求めます。");
-            int[] answer1 = generateRandomNumber(in1, out1);
+            int[] answer1 = generateRandomNumber(in1, out1, out2);
             System.out.println("プレイヤー1の入力完了。");
 
             System.out.println("プレイヤー2に数値入力を求めます。");
-            int[] answer2 = generateRandomNumber(in2, out2);
+            int[] answer2 = generateRandomNumber(in2, out2, out1);
             System.out.println("プレイヤー2の入力完了。");
 
             // TODOターンの概念をつくる。
             while (flag[0] == 0 && flag[1] == 0) {
-                if (playRound(in1, out1, answer2, "プレイヤー1", 0)) {
-                    System.out.println(flag[0]);
-                }
-                if (playRound(in2, out2, answer1, "プレイヤー2", 1)) {
-                    System.out.println(flag[1]);
-                }
+                playRound(in1, out1, out2, answer2, "プレイヤー1", 0);
+                playRound(in2, out2, out1, answer1, "プレイヤー2", 1);
             }
 
             // flagの値に応じて、結果の出力を変更する
@@ -66,8 +62,10 @@ public class NumeronServer {
         }
     }
 
-    private static int[] generateRandomNumber(BufferedReader in, PrintWriter out) throws IOException {
+    private static int[] generateRandomNumber(BufferedReader in, PrintWriter out, PrintWriter enemy)
+            throws IOException {
         out.println("3桁の異なる数字を入力してください: ");
+        enemy.println("相手が数値を決めるまでお待ち下さい");
         out.flush(); // フラッシュして即座に送信
         while (true) {
             String input = in.readLine();
@@ -99,9 +97,11 @@ public class NumeronServer {
         }
     }
 
-    private static boolean playRound(BufferedReader in, PrintWriter out, int[] answer, String playerName, int flagindex)
+    private static boolean playRound(BufferedReader in, PrintWriter out, PrintWriter enemy, int[] answer,
+            String playerName, int flagindex)
             throws IOException {
         out.println(playerName + "のターンです。予想を入力してください: ");
+        enemy.println("相手の入力が終わるまでお待ち下さい");
         out.flush(); // フラッシュして即座に送信
         String input = in.readLine();
         System.out.println(playerName + "の入力: " + input); // デバッグメッセージ
@@ -124,6 +124,7 @@ public class NumeronServer {
 
         int[] result = evaluateGuess(answer, guess);
         out.println("EAT: " + result[0] + ", BITE: " + result[1]);
+        enemy.println("相手の入力  EAT: " + result[0] + ", BITE: " + result[1]);
         out.flush(); // フラッシュして即座に送信
 
         if (result[0] == 3) {

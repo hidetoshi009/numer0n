@@ -94,7 +94,7 @@ public class NumeronClient extends JFrame {
                 while ((serverMessage = in.readLine()) != null) {
                     final String message = serverMessage;
                     SwingUtilities.invokeLater(() -> {
-                        messageArea.append("サーバー: " + message + "\n");
+                        messageArea.append(message + "\n");
                         messageArea.setCaretPosition(messageArea.getDocument().getLength());
                     });
                 }
