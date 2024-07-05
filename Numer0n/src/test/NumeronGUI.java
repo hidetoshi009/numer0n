@@ -93,7 +93,7 @@ public class NumeronGUI extends JFrame {
 
     public void displayServerMessage(String message) {
         SwingUtilities.invokeLater(() -> {
-            messageArea.append("サーバー: " + message + "\n");
+            messageArea.append(message + "\n");
             messageArea.setCaretPosition(messageArea.getDocument().getLength());
         });
     }
