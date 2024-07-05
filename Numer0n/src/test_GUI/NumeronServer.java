@@ -13,7 +13,7 @@ import java.util.Set;
 
 public class NumeronServer {
     static int[] flag = new int[] { 0, 0 };
-    static int[] itemcount = new int[] { 1, 1, 1 };
+    static int[][] itemcount = { { 1, 1, 1 }, { 1, 1, 1 } };
 
     public static void main(String[] args) {
         while (true) {
@@ -129,19 +129,23 @@ public class NumeronServer {
             String input = in.readLine();
             System.out.println(playerName + "の入力: " + input); // デバッグメッセージ
 
+
+            //TODO　どのアイテムを使用したか通知する。（いまはアイテムCしか通知されてない）
+            //
+
             // アイテムの使用１
             if (input.equals("a")) {
 
                 // アイテムの使用数を判定
-                if (itemcount[flagindex] <= 2) {
+                if (itemcount[flagindex][0] <= 1) {
                     // 相手の答えを表示
                     out.println("相手の答え: " + maxMin(opponentAnswer[0]) + " , " + maxMin(opponentAnswer[1]) + " , "
                             + maxMin(opponentAnswer[2]));
                     out.flush(); // フラッシュして即座に送信
-                    itemcount[flagindex]++;
+                    itemcount[flagindex][0]++;
                     continue; // ターンを継続
                 } else {
-                    out.println("アイテムは2個までしか使用できません");
+                    out.println("このアイテムは1個までしか使用できません");
                     continue;
                 }
             }
@@ -150,29 +154,29 @@ public class NumeronServer {
             if (input.equals("b")) {
 
                 // アイテムの使用数を判定
-                if (itemcount[flagindex] <= 2) {
+                if (itemcount[flagindex][1] <= 1) {
                     out.println("どこかの数字が" + opponentAnswer[random()] + "です。");
-                    itemcount[flagindex]++;
+                    itemcount[flagindex][1]++;
                     continue;
                 } else {
-                    out.println("アイテムは2個までしか使用できません");
+                    out.println("このアイテムは1個までしか使用できません");
                     continue;
                 }
             }
 
             // アイテムの使用３
             if (input.equals("c")) {
-                if (itemcount[flagindex] <= 2) {
+                if (itemcount[flagindex][2] <= 1) {
                     out.println("このアイテムは使用後、相手のターンに変わります。");
                     enemy.println("相手がアイテムCを使用しました");
                     out.flush(); // フラッシュして即座に送信
 
                     int[] newAnswer = generateRandomNumber(in, out, enemy);
                     System.arraycopy(newAnswer, 0, answer, 0, newAnswer.length);
-                    itemcount[flagindex]++;
+                    itemcount[flagindex][2]++;
                     break; // ターン終了
                 } else {
-                    out.println("アイテムは2個までしか使用できません");
+                    out.println("このアイテムは1個までしか使用できません");
                     continue;
                 }
             }
