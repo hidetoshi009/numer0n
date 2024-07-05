@@ -13,52 +13,54 @@ public class NumeronServer {
     static int[] flag = new int[] { 0, 0 };
 
     public static void main(String[] args) {
-        try (ServerSocket serverSocket = new ServerSocket(12345)) {
-            System.out.println("サーバーが起動しました。クライアントの接続を待っています...");
+        while (true) {
+            try (ServerSocket serverSocket = new ServerSocket(12345)) {
+                System.out.println("サーバーが起動しました。クライアントの接続を待っています...");
 
-            Socket player1 = serverSocket.accept();
-            System.out.println("プレイヤー1が接続しました。");
-            PrintWriter out1 = new PrintWriter(player1.getOutputStream(), true);
-            BufferedReader in1 = new BufferedReader(new InputStreamReader(player1.getInputStream()));
+                Socket player1 = serverSocket.accept();
+                System.out.println("プレイヤー1が接続しました。");
+                PrintWriter out1 = new PrintWriter(player1.getOutputStream(), true);
+                BufferedReader in1 = new BufferedReader(new InputStreamReader(player1.getInputStream()));
 
-            Socket player2 = serverSocket.accept();
-            System.out.println("プレイヤー2が接続しました。");
-            PrintWriter out2 = new PrintWriter(player2.getOutputStream(), true);
-            BufferedReader in2 = new BufferedReader(new InputStreamReader(player2.getInputStream()));
+                Socket player2 = serverSocket.accept();
+                System.out.println("プレイヤー2が接続しました。");
+                PrintWriter out2 = new PrintWriter(player2.getOutputStream(), true);
+                BufferedReader in2 = new BufferedReader(new InputStreamReader(player2.getInputStream()));
 
-            out1.println("あなたはプレイヤー1です。");
-            out2.println("あなたはプレイヤー2です。");
+                out1.println("あなたはプレイヤー1です。");
+                out2.println("あなたはプレイヤー2です。");
 
-            System.out.println("プレイヤー1に数値入力を求めます。");
-            int[] answer1 = generateRandomNumber(in1, out1, out2);
-            System.out.println("プレイヤー1の入力完了。");
+                System.out.println("プレイヤー1に数値入力を求めます。");
+                int[] answer1 = generateRandomNumber(in1, out1, out2);
+                System.out.println("プレイヤー1の入力完了。");
 
-            System.out.println("プレイヤー2に数値入力を求めます。");
-            int[] answer2 = generateRandomNumber(in2, out2, out1);
-            System.out.println("プレイヤー2の入力完了。");
+                System.out.println("プレイヤー2に数値入力を求めます。");
+                int[] answer2 = generateRandomNumber(in2, out2, out1);
+                System.out.println("プレイヤー2の入力完了。");
 
-            // TODOターンの概念をつくる。
-            while (flag[0] == 0 && flag[1] == 0) {
-                playRound(in1, out1, out2, answer2, "プレイヤー1", 0);
-                playRound(in2, out2, out1, answer1, "プレイヤー2", 1);
+                // TODOターンの概念をつくる。
+                while (flag[0] == 0 && flag[1] == 0) {
+                    playRound(in1, out1, out2, answer2, "プレイヤー1", 0);
+                    playRound(in2, out2, out1, answer1, "プレイヤー2", 1);
+                }
+
+                // flagの値に応じて、結果の出力を変更する
+                if (flag[0] == 1 && flag[1] == 0) {
+                    out1.println("あなたの勝利です");
+                    out2.println("プレイヤー1の勝利です");
+                } else if (flag[0] == 0 && flag[1] == 1) {
+                    out1.println("プレイヤー2の勝利です");
+                    out2.println("あなたの勝利です");
+                } else {
+                    out1.println("引き分けです");
+                    out2.println("引き分けです");
+                }
+
+                player1.close();
+                player2.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-
-            // flagの値に応じて、結果の出力を変更する
-            if (flag[0] == 1 && flag[1] == 0) {
-                out1.println("あなたの勝利です");
-                out2.println("プレイヤー1の勝利です");
-            } else if (flag[0] == 0 && flag[1] == 1) {
-                out1.println("プレイヤー2の勝利です");
-                out2.println("あなたの勝利です");
-            } else {
-                out1.println("引き分けです");
-                out2.println("引き分けです");
-            }
-
-            player1.close();
-            player2.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
