@@ -22,7 +22,7 @@ import javax.swing.SwingUtilities;
 
 public class NumeronGUI extends JFrame {
 
-    private List<Integer> selectedNumbers;
+    private List<String> selectedEntries; // Change to List of String to include characters
     private JLabel selectedLabel;
     private JTextArea messageArea;
     private JTextField inputField; // 入力中の数値を表示するためのフィールド
@@ -30,7 +30,7 @@ public class NumeronGUI extends JFrame {
 
     public NumeronGUI(NumeronClient client) {
         this.client = client;
-        selectedNumbers = new ArrayList<>();
+        selectedEntries = new ArrayList<>();
         initializeUI();
 
         // ウィンドウが閉じられたときの処理を追加
@@ -114,10 +114,10 @@ public class NumeronGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             JButton button = (JButton) e.getSource();
-            int selectedNumber = Integer.parseInt(button.getText());
+            String selectedEntry = button.getText();
 
-            if (selectedNumbers.size() < 3 && !selectedNumbers.contains(selectedNumber)) {
-                selectedNumbers.add(selectedNumber);
+            if (selectedEntries.size() < 3 && !selectedEntries.contains(selectedEntry)) {
+                selectedEntries.add(selectedEntry);
                 updateSelectedLabel();
             }
 
@@ -130,13 +130,13 @@ public class NumeronGUI extends JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             // OKボタンが押された時の処理
-            System.out.println("OKボタンがクリックされました。選択された数値: " + selectedNumbers);
+            System.out.println("OKボタンがクリックされました。選択された数値: " + selectedEntries);
             StringBuilder sb = new StringBuilder();
-            for (int num : selectedNumbers) {
-                sb.append(num);
+            for (String entry : selectedEntries) {
+                sb.append(entry);
             }
             client.sendMessage(sb.toString()); // サーバーに送信
-            selectedNumbers.clear();
+            selectedEntries.clear();
             updateSelectedLabel();
             updateInputField(); // 入力中の数値をクリア
         }
@@ -145,7 +145,7 @@ public class NumeronGUI extends JFrame {
     private class ResetButtonListener implements ActionListener {
         @Override
         public void actionPerformed(ActionEvent e) {
-            selectedNumbers.clear();
+            selectedEntries.clear();
             updateSelectedLabel();
             updateInputField(); // 入力中の数値をクリア
         }
@@ -153,23 +153,19 @@ public class NumeronGUI extends JFrame {
 
     private void updateSelectedLabel() {
         StringBuilder sb = new StringBuilder("選択した数値: ");
-        for (int num : selectedNumbers) {
-            sb.append(num).append(" ");
+        for (String entry : selectedEntries) {
+            sb.append(entry).append(" ");
         }
         selectedLabel.setText(sb.toString());
 
         // 数字が3桁選択されているかをチェックしてOKボタンを有効化する
-        if (selectedNumbers.size() == 3) {
-            enableOkButton(true);
-        } else {
-            enableOkButton(false);
-        }
+        enableOkButton(true);
     }
 
     private void updateInputField() {
         StringBuilder sb = new StringBuilder();
-        for (int num : selectedNumbers) {
-            sb.append(num);
+        for (String entry : selectedEntries) {
+            sb.append(entry);
         }
         inputField.setText(sb.toString());
     }

@@ -6,13 +6,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 public class NumeronServer {
     static int[] flag = new int[] { 0, 0 };
-    static int[] itemcount = new int[] { 1, 1 };
+    static int[] itemcount = new int[] { 1, 1, 1 };
 
     public static void main(String[] args) {
         while (true) {
@@ -145,7 +146,7 @@ public class NumeronServer {
                 }
             }
 
-            //アイテムの使用２
+            // アイテムの使用２
             if (input.equals("b")) {
 
                 // アイテムの使用数を判定
@@ -159,7 +160,7 @@ public class NumeronServer {
                 }
             }
 
-            //アイテムの使用３
+            // アイテムの使用３
             if (input.equals("c")) {
                 if (itemcount[flagindex] <= 2) {
                     out.println("このアイテムは使用後、相手のターンに変わります。");
@@ -178,7 +179,7 @@ public class NumeronServer {
 
             // 不適切な値の入力
             if (input.length() != 3 || !input.matches("\\d{3}")) {
-                out.println("無効な入力です。3桁の数字を入力してください。");
+                out.println("無効な入力です。3桁の数字を入力してください。もしくはアイテムのみを入力してください");
                 out.flush(); // フラッシュして即座に送信
                 continue; // ターンを継続
             }
@@ -196,7 +197,7 @@ public class NumeronServer {
 
             int[] result = evaluateGuess(answer, guess);
             out.println("EAT: " + result[0] + ", BITE: " + result[1]);
-            enemy.println("相手の入力  EAT: " + result[0] + ", BITE: " + result[1]);
+            enemy.println("相手の入力: " + Arrays.toString(guess));
             out.flush(); // フラッシュして即座に送信
 
             if (result[0] == 3) {
