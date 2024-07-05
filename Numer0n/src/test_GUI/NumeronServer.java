@@ -7,10 +7,12 @@ import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 public class NumeronServer {
     static int[] flag = new int[] { 0, 0 };
+    static int[] itemcount = new int[] { 1, 1 };
 
     public static void main(String[] args) {
         while (true) {
@@ -38,10 +40,10 @@ public class NumeronServer {
                 int[] answer2 = generateRandomNumber(in2, out2, out1);
                 System.out.println("プレイヤー2の入力完了。");
 
-                // TODOターンの概念をつくる。
+                // ターンの概念をつくる。
                 while (flag[0] == 0 && flag[1] == 0) {
-                    playRound(in1, out1, out2, answer2, "プレイヤー1", 0);
-                    playRound(in2, out2, out1, answer1, "プレイヤー2", 1);
+                    playRound(in1, out1, out2, answer2, "プレイヤー1", 0, answer1);
+                    playRound(in2, out2, out1, answer1, "プレイヤー2", 1, answer2);
                 }
 
                 // flagの値に応じて、結果の出力を変更する
@@ -64,6 +66,7 @@ public class NumeronServer {
         }
     }
 
+    // 初期値の入力
     private static int[] generateRandomNumber(BufferedReader in, PrintWriter out, PrintWriter enemy)
             throws IOException {
         out.println("3桁の異なる数字を入力してください: ");
@@ -99,43 +102,111 @@ public class NumeronServer {
         }
     }
 
-    private static boolean playRound(BufferedReader in, PrintWriter out, PrintWriter enemy, int[] answer,
-            String playerName, int flagindex)
+    // アイテム１
+    private static String maxMin(int opponentAnswer) {
+        if (5 <= opponentAnswer) {
+            return "high";
+        } else {
+            return "low";
+        }
+    }
+
+    // アイテム２
+    private static int random() {
+        Random random = new Random();
+        return random.nextInt(2);
+    }
+
+    // 予想の入力
+    private static void playRound(BufferedReader in, PrintWriter out, PrintWriter enemy, int[] answer,
+            String playerName, int flagindex, int[] opponentAnswer)
             throws IOException {
-        out.println(playerName + "のターンです。予想を入力してください: ");
-        enemy.println("相手の入力が終わるまでお待ち下さい");
-        out.flush(); // フラッシュして即座に送信
-        String input = in.readLine();
-        System.out.println(playerName + "の入力: " + input); // デバッグメッセージ
-        if (input.length() != 3 || !input.matches("\\d{3}")) {
-            out.println("無効な入力です。3桁の数字を入力してください。");
+        while (true) {
+            out.println(playerName + "のターンです。予想を入力してください: ");
+            enemy.println("相手の入力が終わるまでお待ち下さい");
             out.flush(); // フラッシュして即座に送信
-            return false;
-        }
+            String input = in.readLine();
+            System.out.println(playerName + "の入力: " + input); // デバッグメッセージ
 
-        int[] guess = new int[3];
-        for (int i = 0; i < 3; i++) {
-            guess[i] = Character.getNumericValue(input.charAt(i));
-        }
+            // アイテムの使用１
+            if (input.equals("a")) {
 
-        if (!isValidGuess(guess)) {
-            out.println("数字は異なる3桁でなければなりません。");
+                // アイテムの使用数を判定
+                if (itemcount[flagindex] <= 2) {
+                    // 相手の答えを表示
+                    out.println("相手の答え: " + maxMin(opponentAnswer[0]) + " , " + maxMin(opponentAnswer[1]) + " , "
+                            + maxMin(opponentAnswer[2]));
+                    out.flush(); // フラッシュして即座に送信
+                    itemcount[flagindex]++;
+                    continue; // ターンを継続
+                } else {
+                    out.println("アイテムは2個までしか使用できません");
+                    continue;
+                }
+            }
+
+            //アイテムの使用２
+            if (input.equals("b")) {
+
+                // アイテムの使用数を判定
+                if (itemcount[flagindex] <= 2) {
+                    out.println("どこかの数字が" + opponentAnswer[random()] + "です。");
+                    itemcount[flagindex]++;
+                    continue;
+                } else {
+                    out.println("アイテムは2個までしか使用できません");
+                    continue;
+                }
+            }
+
+            //アイテムの使用３
+            if (input.equals("c")) {
+                if (itemcount[flagindex] <= 2) {
+                    out.println("このアイテムは使用後、相手のターンに変わります。");
+                    enemy.println("相手がアイテムCを使用しました");
+                    out.flush(); // フラッシュして即座に送信
+
+                    int[] newAnswer = generateRandomNumber(in, out, enemy);
+                    System.arraycopy(newAnswer, 0, answer, 0, newAnswer.length);
+                    itemcount[flagindex]++;
+                    break; // ターン終了
+                } else {
+                    out.println("アイテムは2個までしか使用できません");
+                    continue;
+                }
+            }
+
+            // 不適切な値の入力
+            if (input.length() != 3 || !input.matches("\\d{3}")) {
+                out.println("無効な入力です。3桁の数字を入力してください。");
+                out.flush(); // フラッシュして即座に送信
+                continue; // ターンを継続
+            }
+
+            int[] guess = new int[3];
+            for (int i = 0; i < 3; i++) {
+                guess[i] = Character.getNumericValue(input.charAt(i));
+            }
+
+            if (!isValidGuess(guess)) {
+                out.println("数字は異なる3桁でなければなりません。");
+                out.flush(); // フラッシュして即座に送信
+                continue; // ターンを継続
+            }
+
+            int[] result = evaluateGuess(answer, guess);
+            out.println("EAT: " + result[0] + ", BITE: " + result[1]);
+            enemy.println("相手の入力  EAT: " + result[0] + ", BITE: " + result[1]);
             out.flush(); // フラッシュして即座に送信
-            return false;
-        }
 
-        int[] result = evaluateGuess(answer, guess);
-        out.println("EAT: " + result[0] + ", BITE: " + result[1]);
-        enemy.println("相手の入力  EAT: " + result[0] + ", BITE: " + result[1]);
-        out.flush(); // フラッシュして即座に送信
-
-        if (result[0] == 3) {
-            out.println("おめでとうございます！正解です！");
-            out.flush(); // フラッシュして即座に送信
-            flag[flagindex]++;
-            return true;
+            if (result[0] == 3) {
+                out.println("おめでとうございます！正解です！");
+                out.flush(); // フラッシュして即座に送信
+                flag[flagindex]++;
+                break;
+            }
+            break;
         }
-        return false;
     }
 
     private static boolean isValidGuess(int[] guess) {
