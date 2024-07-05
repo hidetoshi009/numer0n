@@ -6,11 +6,6 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,33 +13,26 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
 
-public class NumeronClient extends JFrame {
+public class NumeronInputGUI extends JFrame {
 
     private List<Integer> selectedNumbers;
     private JLabel selectedLabel;
-    private JTextArea messageArea;
-    private PrintWriter out;
-    private BufferedReader in;
-    private JPanel cardPanel;
 
-    public NumeronClient() {
+    public NumeronInputGUI() {
         selectedNumbers = new ArrayList<>();
         initializeUI();
-        initializeNetwork();
     }
 
     private void initializeUI() {
         setTitle("Numeron 数値入力");
-        setSize(300, 400);
+        setSize(300, 200);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
 
-        cardPanel = new JPanel(new GridLayout(2, 5));
+        JPanel cardPanel = new JPanel(new GridLayout(2, 5));
         for (int i = 0; i < 10; i++) {
             JButton cardButton = new JButton(String.valueOf(i));
             cardButton.addActionListener(new CardButtonListener());
@@ -65,43 +53,8 @@ public class NumeronClient extends JFrame {
         mainPanel.add(cardPanel, BorderLayout.CENTER);
         mainPanel.add(controlPanel, BorderLayout.SOUTH);
 
-        messageArea = new JTextArea();
-        messageArea.setEditable(false);
-        JScrollPane scrollPane = new JScrollPane(messageArea);
-        mainPanel.add(scrollPane, BorderLayout.EAST);
-
         add(mainPanel);
         setVisible(true);
-    }
-
-    private void initializeNetwork() {
-        try {
-            Socket socket = new Socket("localhost", 12345);
-            out = new PrintWriter(socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            receiveMessages();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void receiveMessages() {
-        new Thread(() -> {
-            try {
-                String serverMessage;
-                while ((serverMessage = in.readLine()) != null) {
-                    final String message = serverMessage;
-                    SwingUtilities.invokeLater(() -> {
-                        messageArea.append("サーバー: " + message + "\n");
-                        messageArea.setCaretPosition(messageArea.getDocument().getLength());
-                    });
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 
     private class CardButtonListener implements ActionListener {
@@ -122,11 +75,6 @@ public class NumeronClient extends JFrame {
         public void actionPerformed(ActionEvent e) {
             // OKボタンが押された時の処理
             System.out.println("OKボタンがクリックされました。選択された数値: " + selectedNumbers);
-            StringBuilder sb = new StringBuilder();
-            for (int num : selectedNumbers) {
-                sb.append(num);
-            }
-            out.println(sb.toString());  // サーバーに送信
             selectedNumbers.clear();
             updateSelectedLabel();
         }
@@ -175,6 +123,6 @@ public class NumeronClient extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(NumeronClient::new);
+        SwingUtilities.invokeLater(NumeronInputGUI::new);
     }
 }
