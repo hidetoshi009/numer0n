@@ -118,7 +118,7 @@ public class NumeronServer {
     }
 
     // 予想の入力
-    private static boolean playRound(BufferedReader in, PrintWriter out, PrintWriter enemy, int[] answer,
+    private static void playRound(BufferedReader in, PrintWriter out, PrintWriter enemy, int[] answer,
             String playerName, int flagindex, int[] opponentAnswer)
             throws IOException {
         while (true) {
@@ -158,6 +158,22 @@ public class NumeronServer {
                 }
             }
 
+            if (input.equals("c")) {
+                if (itemcount[flagindex] <= 2) {
+                    out.println("このアイテムは使用後、相手のターンに変わります。");
+                    enemy.println("相手がアイテムCを使用しました");
+                    out.flush(); // フラッシュして即座に送信
+
+                    int[] newAnswer = generateRandomNumber(in, out, enemy);
+                    System.arraycopy(newAnswer, 0, answer, 0, newAnswer.length);
+                    itemcount[flagindex]++;
+                    break; // ターン終了
+                } else {
+                    out.println("アイテムは2個までしか使用できません");
+                    continue;
+                }
+            }
+
             // 不適切な値の入力
             if (input.length() != 3 || !input.matches("\\d{3}")) {
                 out.println("無効な入力です。3桁の数字を入力してください。");
@@ -185,9 +201,9 @@ public class NumeronServer {
                 out.println("おめでとうございます！正解です！");
                 out.flush(); // フラッシュして即座に送信
                 flag[flagindex]++;
-                return true;
+                break;
             }
-            return false;
+            break;
         }
     }
 
