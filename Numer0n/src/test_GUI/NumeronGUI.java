@@ -1,10 +1,9 @@
-package test_GUI;
+package test;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -34,36 +33,49 @@ public class NumeronGUI extends JFrame {
         selectedNumbers = new ArrayList<>();
         initializeUI();
 
+        // ウィンドウが閉じられたときの処理を追加
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                client.close();
-                System.exit(0);
+                client.close(); // クライアントをクローズ
+                System.exit(0); // システムを終了
             }
         });
     }
 
     private void initializeUI() {
         setTitle("Numeron 数値入力");
-        setSize(600, 600);
+        setSize(900, 680);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         // メッセージエリアを上に配置
-        messageArea = new JTextArea(5, 20);
+        messageArea = new JTextArea(25, 20);
         messageArea.setEditable(false);
         JScrollPane scrollPane = new JScrollPane(messageArea);
         mainPanel.add(scrollPane, BorderLayout.NORTH);
 
         // カードパネルを中央に配置
-        JPanel cardPanel = new JPanel(new GridLayout(2, 5, 5, 5)); // 5pxの間隔を追加
+        JPanel cardPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5)); // 5pxの間隔を追加
         for (int i = 0; i < 10; i++) {
             JButton cardButton = new JButton(String.valueOf(i));
             cardButton.setPreferredSize(new Dimension(50, 50)); // ボタンのサイズを固定
             cardButton.addActionListener(new CardButtonListener());
             cardPanel.add(cardButton);
         }
+        JButton acardButton = new JButton("a");
+        acardButton.setPreferredSize(new Dimension(50, 50)); // ボタンのサイズを固定
+        acardButton.addActionListener(new CardButtonListener());
+        cardPanel.add(acardButton);
+        JButton bcardButton = new JButton("b");
+        bcardButton.setPreferredSize(new Dimension(50, 50)); // ボタンのサイズを固定
+        bcardButton.addActionListener(new CardButtonListener());
+        cardPanel.add(bcardButton);
+        JButton ccardButton = new JButton("c");
+        ccardButton.setPreferredSize(new Dimension(50, 50)); // ボタンのサイズを固定
+        ccardButton.addActionListener(new CardButtonListener());
+        cardPanel.add(ccardButton);
         mainPanel.add(cardPanel, BorderLayout.CENTER);
 
         // 入力中の数値を表示するフィールドを下に配置
@@ -76,7 +88,7 @@ public class NumeronGUI extends JFrame {
         // コントロールパネルを下に配置
         JPanel controlPanel = new JPanel(new FlowLayout());
         JButton okButton = new JButton("OK");
-        okButton.setEnabled(false);  // 最初は無効化
+        okButton.setEnabled(false); // 最初は無効化
         okButton.addActionListener(new OkButtonListener());
         JButton resetButton = new JButton("リセット");
         resetButton.addActionListener(new ResetButtonListener());
@@ -93,7 +105,7 @@ public class NumeronGUI extends JFrame {
 
     public void displayServerMessage(String message) {
         SwingUtilities.invokeLater(() -> {
-            messageArea.append(message + "\n");
+            messageArea.append("サーバー: " + message + "\n");
             messageArea.setCaretPosition(messageArea.getDocument().getLength());
         });
     }
@@ -123,7 +135,7 @@ public class NumeronGUI extends JFrame {
             for (int num : selectedNumbers) {
                 sb.append(num);
             }
-            client.sendMessage(sb.toString());  // サーバーに送信
+            client.sendMessage(sb.toString()); // サーバーに送信
             selectedNumbers.clear();
             updateSelectedLabel();
             updateInputField(); // 入力中の数値をクリア
@@ -179,12 +191,5 @@ public class NumeronGUI extends JFrame {
                 }
             }
         }
-    }
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(() -> {
-            NumeronClient client = new NumeronClient("localhost");
-            new NumeronGUI(client);
-        });
     }
 }
