@@ -145,6 +145,7 @@ public class NumeronServer {
                 }
             }
 
+            //アイテムの使用２
             if (input.equals("b")) {
 
                 // アイテムの使用数を判定
@@ -158,6 +159,7 @@ public class NumeronServer {
                 }
             }
 
+            //アイテムの使用３
             if (input.equals("c")) {
                 if (itemcount[flagindex] <= 2) {
                     out.println("このアイテムは使用後、相手のターンに変わります。");
