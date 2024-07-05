@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class NumeronServer {
+    static int[] flag = new int[] { 0, 0 };
 
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(12345)) {
@@ -36,14 +37,26 @@ public class NumeronServer {
             int[] answer2 = generateRandomNumber(in2, out2);
             System.out.println("プレイヤー2の入力完了。");
 
-            //TODOターンの概念をつくる。
-            while (true) {
-                if (playRound(in1, out1, answer2, "プレイヤー1")) {
-                    break;
+            // TODOターンの概念をつくる。
+            while (flag[0] == 0 && flag[1] == 0) {
+                if (playRound(in1, out1, answer2, "プレイヤー1", 0)) {
+                    System.out.println(flag[0]);
                 }
-                if (playRound(in2, out2, answer1, "プレイヤー2")) {
-                    break;
+                if (playRound(in2, out2, answer1, "プレイヤー2", 1)) {
+                    System.out.println(flag[1]);
                 }
+            }
+
+            // flagの値に応じて、結果の出力を変更する
+            if (flag[0] == 1 && flag[1] == 0) {
+                out1.println("あなたの勝利です");
+                out2.println("プレイヤー1の勝利です");
+            } else if (flag[0] == 0 && flag[1] == 1) {
+                out1.println("プレイヤー2の勝利です");
+                out2.println("あなたの勝利です");
+            } else {
+                out1.println("引き分けです");
+                out2.println("引き分けです");
             }
 
             player1.close();
@@ -55,13 +68,13 @@ public class NumeronServer {
 
     private static int[] generateRandomNumber(BufferedReader in, PrintWriter out) throws IOException {
         out.println("3桁の異なる数字を入力してください: ");
-        out.flush();  // フラッシュして即座に送信
+        out.flush(); // フラッシュして即座に送信
         while (true) {
             String input = in.readLine();
-            System.out.println("入力を受信: " + input);  // デバッグメッセージ
+            System.out.println("入力を受信: " + input); // デバッグメッセージ
             if (input.length() != 3 || !input.matches("\\d{3}")) {
                 out.println("無効な入力です。3桁の数字を入力してください: ");
-                out.flush();  // フラッシュして即座に送信
+                out.flush(); // フラッシュして即座に送信
                 continue;
             }
 
@@ -81,19 +94,20 @@ public class NumeronServer {
                 return number;
             } else {
                 out.println("数字は異なる3桁でなければなりません。再度入力してください: ");
-                out.flush();  // フラッシュして即座に送信
+                out.flush(); // フラッシュして即座に送信
             }
         }
     }
 
-    private static boolean playRound(BufferedReader in, PrintWriter out, int[] answer, String playerName) throws IOException {
+    private static boolean playRound(BufferedReader in, PrintWriter out, int[] answer, String playerName, int flagindex)
+            throws IOException {
         out.println(playerName + "のターンです。予想を入力してください: ");
-        out.flush();  // フラッシュして即座に送信
+        out.flush(); // フラッシュして即座に送信
         String input = in.readLine();
-        System.out.println(playerName + "の入力: " + input);  // デバッグメッセージ
+        System.out.println(playerName + "の入力: " + input); // デバッグメッセージ
         if (input.length() != 3 || !input.matches("\\d{3}")) {
             out.println("無効な入力です。3桁の数字を入力してください。");
-            out.flush();  // フラッシュして即座に送信
+            out.flush(); // フラッシュして即座に送信
             return false;
         }
 
@@ -104,17 +118,18 @@ public class NumeronServer {
 
         if (!isValidGuess(guess)) {
             out.println("数字は異なる3桁でなければなりません。");
-            out.flush();  // フラッシュして即座に送信
+            out.flush(); // フラッシュして即座に送信
             return false;
         }
 
         int[] result = evaluateGuess(answer, guess);
         out.println("EAT: " + result[0] + ", BITE: " + result[1]);
-        out.flush();  // フラッシュして即座に送信
+        out.flush(); // フラッシュして即座に送信
 
         if (result[0] == 3) {
-            out.println("おめでとうございます！" + playerName + "が正解です！");
-            out.flush();  // フラッシュして即座に送信
+            out.println("おめでとうございます！正解です！");
+            out.flush(); // フラッシュして即座に送信
+            flag[flagindex]++;
             return true;
         }
         return false;
@@ -142,7 +157,7 @@ public class NumeronServer {
             }
         }
 
-        return new int[]{eat, bite};
+        return new int[] { eat, bite };
     }
 
     private static boolean contains(int[] array, int value) {
