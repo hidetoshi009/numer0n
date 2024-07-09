@@ -1,7 +1,6 @@
-package test_GUI;
+package test;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
@@ -11,9 +10,11 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -21,32 +22,40 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 public class NumeronGUI extends JFrame {
-
-    private List<String> selectedEntries; // Change to List of String to include characters
+    //TODOitemボタンを正常利用時のみ無効化
+    
+    private List<String> selectedEntries;
     private JLabel selectedLabel;
     private JTextArea messageArea;
-    private JTextField inputField; // 入力中の数値を表示するためのフィールド
+    private JTextField inputField;
     private NumeronClient client;
+    private List<JButton> cardButtons;
+    private List<JButton> itemButtons;
+    private JButton okButton; // `OK`ボタンの参照を保存
 
     public NumeronGUI(NumeronClient client) {
         this.client = client;
         selectedEntries = new ArrayList<>();
+        cardButtons = new ArrayList<>();
+        itemButtons = new ArrayList<>();
         initializeUI();
 
         // ウィンドウが閉じられたときの処理を追加
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                client.close(); // クライアントをクローズ
                 System.exit(0); // システムを終了
             }
         });
+
+        // 最初にゲーム説明のウィンドウを表示
+        showGameDescription();
     }
 
     private void initializeUI() {
         setTitle("Numeron 数値入力");
         setSize(900, 680);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
 
@@ -59,23 +68,20 @@ public class NumeronGUI extends JFrame {
         // カードパネルを中央に配置
         JPanel cardPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5)); // 5pxの間隔を追加
         for (int i = 0; i < 10; i++) {
-            JButton cardButton = new JButton(String.valueOf(i));
-            cardButton.setPreferredSize(new Dimension(50, 50)); // ボタンのサイズを固定
-            cardButton.addActionListener(new CardButtonListener());
+            JButton cardButton = createCardButton(String.valueOf(i));
+            cardButton.setPreferredSize(new Dimension(70, 70));
             cardPanel.add(cardButton);
         }
-        JButton acardButton = new JButton("a");
-        acardButton.setPreferredSize(new Dimension(50, 50)); // ボタンのサイズを固定
-        acardButton.addActionListener(new CardButtonListener());
-        cardPanel.add(acardButton);
-        JButton bcardButton = new JButton("b");
-        bcardButton.setPreferredSize(new Dimension(50, 50)); // ボタンのサイズを固定
-        bcardButton.addActionListener(new CardButtonListener());
-        cardPanel.add(bcardButton);
-        JButton ccardButton = new JButton("c");
-        ccardButton.setPreferredSize(new Dimension(50, 50)); // ボタンのサイズを固定
-        ccardButton.addActionListener(new CardButtonListener());
-        cardPanel.add(ccardButton);
+        JButton AitemButton = createItemButton("a", "H&L.png");
+        JButton BitemButton = createItemButton("b", "Sniper.png");
+        JButton CitemButton = createItemButton("c", "Change.png");
+
+        AitemButton.setPreferredSize(new Dimension(100, 100));
+        BitemButton.setPreferredSize(new Dimension(100, 100));
+        CitemButton.setPreferredSize(new Dimension(100, 100));
+        cardPanel.add(AitemButton);
+        cardPanel.add(BitemButton);
+        cardPanel.add(CitemButton);
         mainPanel.add(cardPanel, BorderLayout.CENTER);
 
         // 入力中の数値を表示するフィールドを下に配置
@@ -87,7 +93,7 @@ public class NumeronGUI extends JFrame {
 
         // コントロールパネルを下に配置
         JPanel controlPanel = new JPanel(new FlowLayout());
-        JButton okButton = new JButton("OK");
+        okButton = new JButton("OK");
         okButton.setEnabled(false); // 最初は無効化
         okButton.addActionListener(new OkButtonListener());
         JButton resetButton = new JButton("リセット");
@@ -101,6 +107,33 @@ public class NumeronGUI extends JFrame {
 
         add(mainPanel);
         setVisible(true);
+    }
+
+    private JButton createCardButton(String text) {
+        JButton cardButton = new JButton(text);
+        cardButton.addActionListener(new CardButtonListener());
+        cardButton.setActionCommand(text);
+        cardButtons.add(cardButton); // リストに追加
+        return cardButton;
+    }
+
+    private JButton createItemButton(String text, String iconFileName) {
+        // 画像ファイルのパスを指定（srcと同じ階層のimageディレクトリから）
+        String iconPath = "/image/" + iconFileName;
+        ImageIcon icon = new ImageIcon(getClass().getResource(iconPath));
+        JButton itemButton = new JButton(icon);
+        itemButton.setActionCommand(text); // ボタンにテキストを設定
+        itemButton.addActionListener(new ItemButtonListener());
+        itemButtons.add(itemButton); // アイテムリストに追加
+        return itemButton;
+    }
+    
+
+    private void showGameDescription() {
+        JOptionPane.showMessageDialog(this,
+                "ゲームの説明：\nこのゲームは数値を入力して遊ぶゲームです。\n3桁の数値を選択してOKボタンを押してください。",
+                "ゲーム説明",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     public void displayServerMessage(String message) {
@@ -118,6 +151,24 @@ public class NumeronGUI extends JFrame {
 
             if (selectedEntries.size() < 3 && !selectedEntries.contains(selectedEntry)) {
                 selectedEntries.add(selectedEntry);
+                button.setEnabled(false); // ボタンを無効化
+                updateSelectedLabel();
+            }
+
+            // 入力中の数値を更新
+            updateInputField();
+        }
+    }
+
+    private class ItemButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            JButton button = (JButton) e.getSource();
+            String selectedEntry = button.getActionCommand(); // アイテムボタンのテキストを取得
+
+            if (!selectedEntries.contains(selectedEntry)) {
+                selectedEntries.add(selectedEntry);
+                button.setEnabled(false); // アイテムボタンを無効化
                 updateSelectedLabel();
             }
 
@@ -139,6 +190,7 @@ public class NumeronGUI extends JFrame {
             selectedEntries.clear();
             updateSelectedLabel();
             updateInputField(); // 入力中の数値をクリア
+            resetCardButtons(); // カードボタンをリセット
         }
     }
 
@@ -148,6 +200,7 @@ public class NumeronGUI extends JFrame {
             selectedEntries.clear();
             updateSelectedLabel();
             updateInputField(); // 入力中の数値をクリア
+            resetCardButtons(); // カードボタンをリセット
         }
     }
 
@@ -158,8 +211,8 @@ public class NumeronGUI extends JFrame {
         }
         selectedLabel.setText(sb.toString());
 
-        // 数字が3桁選択されているかをチェックしてOKボタンを有効化する
-        enableOkButton(true);
+        // 数字が3桁選択されているか、または特定のアイテムが選択されているかをチェックしてOKボタンを有効化する
+        enableOkButton(selectedEntries.size() == 3 || selectedEntries.contains("a") || selectedEntries.contains("b") || selectedEntries.contains("c"));
     }
 
     private void updateInputField() {
@@ -171,21 +224,15 @@ public class NumeronGUI extends JFrame {
     }
 
     private void enableOkButton(boolean enable) {
-        Component[] components = getContentPane().getComponents();
-        for (Component component : components) {
-            if (component instanceof JPanel) {
-                JPanel panel = (JPanel) component;
-                for (Component innerComponent : panel.getComponents()) {
-                    if (innerComponent instanceof JPanel) {
-                        JPanel innerPanel = (JPanel) innerComponent;
-                        for (Component button : innerPanel.getComponents()) {
-                            if (button instanceof JButton && ((JButton) button).getText().equals("OK")) {
-                                button.setEnabled(enable);
-                            }
-                        }
-                    }
-                }
-            }
+        okButton.setEnabled(enable); // `OK`ボタンの参照を使って有効化
+    }
+
+    private void resetCardButtons() {
+        for (JButton button : cardButtons) {
+            button.setEnabled(true);
+        }
+        for (JButton button : itemButtons) {
+            button.setEnabled(true);
         }
     }
 }
