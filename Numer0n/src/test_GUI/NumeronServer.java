@@ -142,6 +142,7 @@ public class NumeronServer {
                     out.println("相手の答え: " + maxMin(opponentAnswer[0]) + " , " + maxMin(opponentAnswer[1]) + " , "
                             + maxMin(opponentAnswer[2]));
                     out.flush(); // フラッシュして即座に送信
+                    enemy.println("相手がHigh & Lowを使用しました");
                     itemcount[flagindex][0]++;
                     continue; // ターンを継続
                 } else {
@@ -156,6 +157,7 @@ public class NumeronServer {
                 // アイテムの使用数を判定
                 if (itemcount[flagindex][1] <= 1) {
                     out.println("どこかの数字が" + opponentAnswer[random()] + "です。");
+                    enemy.println("相手がSniperを使用しました");
                     itemcount[flagindex][1]++;
                     continue;
                 } else {
@@ -168,7 +170,7 @@ public class NumeronServer {
             if (input.equals("c")) {
                 if (itemcount[flagindex][2] <= 1) {
                     out.println("このアイテムは使用後、相手のターンに変わります。");
-                    enemy.println("相手がアイテムCを使用しました");
+                    enemy.println("相手がChangeを使用しました");
                     out.flush(); // フラッシュして即座に送信
 
                     int[] newAnswer = generateRandomNumber(in, out, enemy);
