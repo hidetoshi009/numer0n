@@ -1,4 +1,4 @@
-package test_CUI;
+package test_db;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -6,13 +6,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
 public class NumeronServer {
     static int[] flag = new int[] { 0, 0 };
-    static int[] itemcount = new int[] { 1, 1 };
+    static int[][] itemcount = { { 1, 1, 1 }, { 1, 1, 1 } };
 
     public static void main(String[] args) {
         while (true) {
@@ -31,21 +32,6 @@ public class NumeronServer {
 
                 out1.println("あなたはプレイヤー1です。");
                 out2.println("あなたはプレイヤー2です。");
-
-                NumeronDB db = new NumeronDB();
-
-                // ユーザー登録
-                out1.println("ユーザー名を入力してください:");
-                String user1 = in1.readLine();
-                out1.println("パスワードを入力してください:");
-                int pass1 = Integer.parseInt(in1.readLine());
-                db.login(user1, pass1);
-
-                out2.println("ユーザー名を入力してください:");
-                String user2 = in2.readLine();
-                out2.println("パスワードを入力してください:");
-                int pass2 = Integer.parseInt(in2.readLine());
-                db.login(user2, pass2);
 
                 System.out.println("プレイヤー1に数値入力を求めます。");
                 int[] answer1 = generateRandomNumber(in1, out1, out2);
@@ -143,19 +129,24 @@ public class NumeronServer {
             String input = in.readLine();
             System.out.println(playerName + "の入力: " + input); // デバッグメッセージ
 
+
+            //TODO　どのアイテムを使用したか通知する。（いまはアイテムCしか通知されてない）
+            //
+
             // アイテムの使用１
             if (input.equals("a")) {
 
                 // アイテムの使用数を判定
-                if (itemcount[flagindex] <= 2) {
+                if (itemcount[flagindex][0] <= 1) {
                     // 相手の答えを表示
                     out.println("相手の答え: " + maxMin(opponentAnswer[0]) + " , " + maxMin(opponentAnswer[1]) + " , "
                             + maxMin(opponentAnswer[2]));
                     out.flush(); // フラッシュして即座に送信
-                    itemcount[flagindex]++;
+                    enemy.print("相手がHigh & Lowを使用しました。");
+                    itemcount[flagindex][0]++;
                     continue; // ターンを継続
                 } else {
-                    out.println("アイテムは2個までしか使用できません");
+                    out.println("このアイテムは1個までしか使用できません");
                     continue;
                 }
             }
@@ -164,36 +155,37 @@ public class NumeronServer {
             if (input.equals("b")) {
 
                 // アイテムの使用数を判定
-                if (itemcount[flagindex] <= 2) {
+                if (itemcount[flagindex][1] <= 1) {
                     out.println("どこかの数字が" + opponentAnswer[random()] + "です。");
-                    itemcount[flagindex]++;
+                    enemy.print("相手がSniperを使用しました。");
+                    itemcount[flagindex][1]++;
                     continue;
                 } else {
-                    out.println("アイテムは2個までしか使用できません");
+                    out.println("このアイテムは1個までしか使用できません");
                     continue;
                 }
             }
 
             // アイテムの使用３
             if (input.equals("c")) {
-                if (itemcount[flagindex] <= 2) {
+                if (itemcount[flagindex][2] <= 1) {
                     out.println("このアイテムは使用後、相手のターンに変わります。");
-                    enemy.println("相手がアイテムCを使用しました");
+                    enemy.print("相手がChangeを使用しました。");
                     out.flush(); // フラッシュして即座に送信
 
                     int[] newAnswer = generateRandomNumber(in, out, enemy);
                     System.arraycopy(newAnswer, 0, answer, 0, newAnswer.length);
-                    itemcount[flagindex]++;
+                    itemcount[flagindex][2]++;
                     break; // ターン終了
                 } else {
-                    out.println("アイテムは2個までしか使用できません");
+                    out.println("このアイテムは1個までしか使用できません");
                     continue;
                 }
             }
 
             // 不適切な値の入力
             if (input.length() != 3 || !input.matches("\\d{3}")) {
-                out.println("無効な入力です。3桁の数字を入力してください。");
+                out.println("無効な入力です。3桁の数字を入力してください。もしくはアイテムのみを入力してください");
                 out.flush(); // フラッシュして即座に送信
                 continue; // ターンを継続
             }
@@ -211,7 +203,7 @@ public class NumeronServer {
 
             int[] result = evaluateGuess(answer, guess);
             out.println("EAT: " + result[0] + ", BITE: " + result[1]);
-            enemy.println("相手の入力  EAT: " + result[0] + ", BITE: " + result[1]);
+            enemy.println("相手の入力: " + Arrays.toString(guess));
             out.flush(); // フラッシュして即座に送信
 
             if (result[0] == 3) {

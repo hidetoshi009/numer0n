@@ -1,4 +1,4 @@
-package test_GUI;
+package test_db;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -119,7 +119,7 @@ public class NumeronGUI extends JFrame {
 
     private JButton createItemButton(String text, String iconFileName) {
         // 画像ファイルのパスを指定（srcと同じ階層のimageディレクトリから）
-        String iconPath = "/image/" + iconFileName;
+        String iconPath = iconFileName;
         ImageIcon icon = new ImageIcon(getClass().getResource(iconPath));
         JButton itemButton = new JButton(icon);
         itemButton.setActionCommand(text); // ボタンにテキストを設定

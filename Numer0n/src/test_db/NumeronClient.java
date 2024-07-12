@@ -1,4 +1,4 @@
-package test_GUI;
+package test_db;
 
 import java.io.BufferedReader;
 import java.io.IOException;
