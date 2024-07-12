@@ -95,6 +95,7 @@ public class NumeronServer {
             }
 
             if (valid) {
+                out.println("あなたの設定値は :" + number[0] + number[1] + number[2]);
                 return number;
             } else {
                 out.println("数字は異なる3桁でなければなりません。再度入力してください: ");
@@ -128,10 +129,6 @@ public class NumeronServer {
             out.flush(); // フラッシュして即座に送信
             String input = in.readLine();
             System.out.println(playerName + "の入力: " + input); // デバッグメッセージ
-
-
-            //TODO　どのアイテムを使用したか通知する。（いまはアイテムCしか通知されてない）
-            //
 
             // アイテムの使用１
             if (input.equals("a")) {

@@ -119,7 +119,7 @@ public class NumeronGUI extends JFrame {
 
     private JButton createItemButton(String text, String iconFileName) {
         // 画像ファイルのパスを指定（srcと同じ階層のimageディレクトリから）
-        String iconPath = iconFileName;
+        String iconPath = "/image/" + iconFileName;
         ImageIcon icon = new ImageIcon(getClass().getResource(iconPath));
         JButton itemButton = new JButton(icon);
         itemButton.setActionCommand(text); // ボタンにテキストを設定
@@ -166,7 +166,7 @@ public class NumeronGUI extends JFrame {
             JButton button = (JButton) e.getSource();
             String selectedEntry = button.getActionCommand(); // アイテムボタンのテキストを取得
 
-            if (!selectedEntries.contains(selectedEntry)) {
+            if (selectedEntries.size() < 1 && !selectedEntries.contains(selectedEntry)) {
                 selectedEntries.add(selectedEntry);
                 button.setEnabled(false); // アイテムボタンを無効化
                 updateSelectedLabel();
@@ -212,7 +212,7 @@ public class NumeronGUI extends JFrame {
         selectedLabel.setText(sb.toString());
 
         // 数字が3桁選択されているか、または特定のアイテムが選択されているかをチェックしてOKボタンを有効化する
-        enableOkButton(selectedEntries.size() == 3 || selectedEntries.contains("a") || selectedEntries.contains("b") || selectedEntries.contains("c"));
+        enableOkButton(selectedEntries.size() == 3 || (selectedEntries.contains("a") && selectedEntries.size() == 1) || (selectedEntries.contains("b") && selectedEntries.size() == 1) || (selectedEntries.contains("c") && selectedEntries.size() == 1));
     }
 
     private void updateInputField() {
