@@ -13,6 +13,7 @@ import java.util.Set;
 
 public class NumeronServer {
     static int[] flag = new int[] { 0, 0 };
+    static boolean endflag = false;
     static int[][] itemcount = { { 1, 1, 1 }, { 1, 1, 1 } };
 
     public static void main(String[] args) {
@@ -46,6 +47,8 @@ public class NumeronServer {
                     playRound(in1, out1, out2, answer2, "プレイヤー1", 0, answer1);
                     playRound(in2, out2, out1, answer1, "プレイヤー2", 1, answer2);
                 }
+
+                endflag = true;
 
                 // flagの値に応じて、結果の出力を変更する
                 if (flag[0] == 1 && flag[1] == 0) {
