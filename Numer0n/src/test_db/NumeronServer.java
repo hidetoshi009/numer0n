@@ -129,10 +129,6 @@ public class NumeronServer {
             String input = in.readLine();
             System.out.println(playerName + "の入力: " + input); // デバッグメッセージ
 
-
-            //TODO　どのアイテムを使用したか通知する。（いまはアイテムCしか通知されてない）
-            //
-
             // アイテムの使用１
             if (input.equals("a")) {
 

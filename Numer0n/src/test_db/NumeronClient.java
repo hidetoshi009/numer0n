@@ -14,6 +14,7 @@ public class NumeronClient {
     private BufferedReader in;
     private Socket socket;
     private NumeronGUI gui;
+    private boolean isMyTurn = true;
 
     public NumeronClient(String serverAddress) {
         initializeNetwork(serverAddress);
@@ -42,7 +43,14 @@ public class NumeronClient {
                 String serverMessage;
                 while ((serverMessage = in.readLine()) != null) {
                     final String message = serverMessage;
-                    SwingUtilities.invokeLater(() -> gui.displayServerMessage(message));
+                    SwingUtilities.invokeLater(() -> {
+                        gui.displayServerMessage(message);
+                        if (message.contains("相手のターンです。") || message.contains("入力してください") || message.contains("勝利です")) {
+                            isMyTurn = true;
+                        } else if (message.contains("相手の入力が終わるまでお待ち下さい") || message.contains("相手が")) {
+                            isMyTurn = false;
+                        }
+                    });
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -51,7 +59,11 @@ public class NumeronClient {
     }
 
     public void sendMessage(String message) {
-        out.println(message);
+        if (isMyTurn) {
+            out.println(message);
+        } else {
+            gui.displayServerMessage("今はあなたのターンではありません。");
+        }
     }
 
     public void close() {
