@@ -12,11 +12,15 @@ import java.util.Random;
 import java.util.Set;
 
 public class NumeronServer {
-    static int[] flag = new int[] { 0, 0 };
-    static int[][] itemcount = { { 1, 1, 1 }, { 1, 1, 1 } };
+    static int[] flag;
+    static int[][] itemcount;
 
     public static void main(String[] args) {
         while (true) {
+
+            flag = new int[] { 0, 0 };
+            itemcount = new int[][] { { 1, 1, 1 }, { 1, 1, 1 } };
+
             try (ServerSocket serverSocket = new ServerSocket(12345)) {
                 System.out.println("サーバーが起動しました。クライアントの接続を待っています...");
 
@@ -43,8 +47,8 @@ public class NumeronServer {
 
                 // ターンの概念をつくる。
                 while (flag[0] == 0 && flag[1] == 0) {
-                    playRound(in1, out1, out2, answer2, "プレイヤー1", 0, answer1);
-                    playRound(in2, out2, out1, answer1, "プレイヤー2", 1, answer2);
+                    playRound(in1, out1, out2, answer2, "プレイヤー1", 0, answer2);
+                    playRound(in2, out2, out1, answer1, "プレイヤー2", 1, answer1);
                 }
 
                 // flagの値に応じて、結果の出力を変更する
