@@ -72,9 +72,9 @@ public class NumeronGUI extends JFrame {
             cardButton.setPreferredSize(new Dimension(70, 70));
             cardPanel.add(cardButton);
         }
-        JButton AitemButton = createItemButton("a", "H&L.png");
-        JButton BitemButton = createItemButton("b", "Sniper.png");
-        JButton CitemButton = createItemButton("c", "Change.png");
+        JButton AitemButton = createItemButton("H&L", "H&L.png");
+        JButton BitemButton = createItemButton("Sniper", "Sniper.png");
+        JButton CitemButton = createItemButton("Change", "Change.png");
 
         AitemButton.setPreferredSize(new Dimension(100, 100));
         BitemButton.setPreferredSize(new Dimension(100, 100));
@@ -131,7 +131,7 @@ public class NumeronGUI extends JFrame {
 
     private void showGameDescription() {
         JOptionPane.showMessageDialog(this,
-                "ゲームの説明：\nこのゲームは数値を入力して遊ぶゲームです。\n3桁の数値を選択してOKボタンを押してください。",
+                "ゲームの説明：\nヌメロンは、2人のプレイヤーが対戦する数字推測ゲームです\n相手が選んだ3桁の数字を推測することが目的です。\n3桁の数値を選択してOKボタンを押してください。",
                 "ゲーム説明",
                 JOptionPane.INFORMATION_MESSAGE);
     }
@@ -212,7 +212,7 @@ public class NumeronGUI extends JFrame {
         selectedLabel.setText(sb.toString());
 
         // 数字が3桁選択されているか、または特定のアイテムが選択されているかをチェックしてOKボタンを有効化する
-        enableOkButton(selectedEntries.size() == 3 || (selectedEntries.contains("a") && selectedEntries.size() == 1) || (selectedEntries.contains("b") && selectedEntries.size() == 1) || (selectedEntries.contains("c") && selectedEntries.size() == 1));
+        enableOkButton(selectedEntries.size() == 3 || (selectedEntries.contains("H&L") && selectedEntries.size() == 1) || (selectedEntries.contains("Sniper") && selectedEntries.size() == 1) || (selectedEntries.contains("Change") && selectedEntries.size() == 1));
     }
 
     private void updateInputField() {

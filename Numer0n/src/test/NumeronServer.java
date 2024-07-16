@@ -136,10 +136,11 @@ public class NumeronServer {
             System.out.println(playerName + "の入力: " + input); // デバッグメッセージ
 
             // アイテムの使用１
-            if (input.equals("a")) {
+            if (input.equals("H&L")) {
 
                 // アイテムの使用数を判定
                 if (itemcount[flagindex][0] <= 1) {
+                    out.println("High & Lowを利用しました");
                     // 相手の答えを表示
                     out.println("相手の答え: " + maxMin(opponentAnswer[0]) + " , " + maxMin(opponentAnswer[1]) + " , "
                             + maxMin(opponentAnswer[2]));
@@ -154,10 +155,11 @@ public class NumeronServer {
             }
 
             // アイテムの使用２
-            if (input.equals("b")) {
+            if (input.equals("Sniper")) {
 
                 // アイテムの使用数を判定
                 if (itemcount[flagindex][1] <= 1) {
+                    out.println("Sniperを利用しました");
                     out.println("どこかの数字が" + opponentAnswer[random()] + "です。");
                     enemy.println("相手がSniperを使用しました");
                     itemcount[flagindex][1]++;
@@ -169,9 +171,9 @@ public class NumeronServer {
             }
 
             // アイテムの使用３
-            if (input.equals("c")) {
+            if (input.equals("Change")) {
                 if (itemcount[flagindex][2] <= 1) {
-                    out.println("このアイテムは使用後、相手のターンに変わります。");
+                    out.println("Changeを利用しました。このアイテムは使用後、相手のターンに変わります。");
                     enemy.println("相手がChangeを使用しました");
                     out.flush(); // フラッシュして即座に送信
 
@@ -204,6 +206,7 @@ public class NumeronServer {
             }
 
             int[] result = evaluateGuess(opponentAnswer, guess);
+            out.println("あなたの入力: " + input);
             out.println("EAT: " + result[0] + ", BITE: " + result[1]);
             enemy.println("相手の入力: " + Arrays.toString(guess));
             out.flush(); // フラッシュして即座に送信
