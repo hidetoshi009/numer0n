@@ -22,7 +22,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 public class NumeronGUI extends JFrame {
-    // TODOitemボタンを正常利用時のみ無効化
 
     private List<String> selectedEntries;
     private JLabel selectedLabel;
