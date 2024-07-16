@@ -98,8 +98,14 @@ public class NumeronGUI extends JFrame {
         okButton.addActionListener(new OkButtonListener());
         JButton resetButton = new JButton("リセット");
         resetButton.addActionListener(new ResetButtonListener());
+        JButton ItemHelpButton = new JButton("アイテムの使い方");
+        ItemHelpButton.addActionListener(new ItemHelpButtonListener());
+        JButton GameHelpButton = new JButton("ゲーム説明");
+        GameHelpButton.addActionListener(new GameHelpButtonListener());
+        controlPanel.add(GameHelpButton);
         controlPanel.add(okButton);
         controlPanel.add(resetButton);
+        controlPanel.add(ItemHelpButton);
 
         selectedLabel = new JLabel("選択した数値: ");
         mainPanel.add(selectedLabel, BorderLayout.LINE_END); // 右側に配置
@@ -133,6 +139,13 @@ public class NumeronGUI extends JFrame {
         JOptionPane.showMessageDialog(this,
                 "ゲームの説明：\nヌメロンは、2人のプレイヤーが対戦する数字推測ゲームです\n相手が選んだ3桁の数字を推測することが目的です。\n3桁の数値を選択してOKボタンを押してください。",
                 "ゲーム説明",
+                JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void showItemDescription(){
+        JOptionPane.showMessageDialog(this,
+                "アイテム説明:\nH&Lは相手の数値が4以下ならLow,5以上ならHighを左から順番に表示します。\nSniperは相手の数値どれか一つを特定します。場所はわかりません。\nChangeは自分の設定している数値を全て変更できます。",
+                "アイテムの説明",
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
@@ -201,6 +214,20 @@ public class NumeronGUI extends JFrame {
             updateSelectedLabel();
             updateInputField(); // 入力中の数値をクリア
             resetCardButtons(); // カードボタンをリセット
+        }
+    }
+
+    private class ItemHelpButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            showItemDescription(); // アイテムの情報を確認できるwindowを開く
+        }
+    }
+
+    private class GameHelpButtonListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            showGameDescription(); // アイテムの情報を確認できるwindowを開く
         }
     }
 
