@@ -16,13 +16,13 @@ public class NumeronServer {
     static int[][] itemcount;
 
     public static void main(String[] args) {
-        flag = new int[] { 0, 0 };
-        itemcount = new int[][] { { 1, 1, 1 }, { 1, 1, 1 } };
+        while (true) {
 
-        try (ServerSocket serverSocket = new ServerSocket(12345)) {
-            System.out.println("サーバーが起動しました。クライアントの接続を待っています...");
+            flag = new int[] { 0, 0 };
+            itemcount = new int[][] { { 1, 1, 1 }, { 1, 1, 1 } };
 
-            while (true) {
+            try (ServerSocket serverSocket = new ServerSocket(12345)) {
+                System.out.println("サーバーが起動しました。クライアントの接続を待っています...");
                 Socket player1 = serverSocket.accept();
                 System.out.println("プレイヤー1が接続しました。");
                 PrintWriter out1 = new PrintWriter(player1.getOutputStream(), true);
@@ -47,9 +47,7 @@ public class NumeronServer {
                 // ターンの概念をつくる。
                 while (flag[0] == 0 && flag[1] == 0) {
                     playRound(in1, out1, out2, answer1, "プレイヤー1", 0, answer2);
-                    if (flag[0] == 0 && flag[1] == 0) { // まだどちらも勝利していない場合のみプレイヤー2のターンを進行
-                        playRound(in2, out2, out1, answer2, "プレイヤー2", 1, answer1);
-                    }
+                    playRound(in2, out2, out1, answer2, "プレイヤー2", 1, answer1);
                 }
 
                 // flagの値に応じて、結果の出力を変更する
@@ -66,9 +64,9 @@ public class NumeronServer {
 
                 player1.close();
                 player2.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
