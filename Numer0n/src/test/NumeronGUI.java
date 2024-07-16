@@ -22,8 +22,8 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
 public class NumeronGUI extends JFrame {
-    //TODOitemボタンを正常利用時のみ無効化
-    
+    // TODOitemボタンを正常利用時のみ無効化
+
     private List<String> selectedEntries;
     private JLabel selectedLabel;
     private JTextArea messageArea;
@@ -133,7 +133,6 @@ public class NumeronGUI extends JFrame {
         itemButtons.add(itemButton); // アイテムリストに追加
         return itemButton;
     }
-    
 
     private void showGameDescription() {
         JOptionPane.showMessageDialog(this,
@@ -142,7 +141,7 @@ public class NumeronGUI extends JFrame {
                 JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private void showItemDescription(){
+    private void showItemDescription() {
         JOptionPane.showMessageDialog(this,
                 "アイテム説明:\nH&Lは相手の数値が4以下ならLow,5以上ならHighを左から順番に表示します。\nSniperは相手の数値どれか一つを特定します。場所はわかりません。\nChangeは自分の設定している数値を全て変更できます。",
                 "アイテムの説明",
@@ -182,6 +181,9 @@ public class NumeronGUI extends JFrame {
             if (selectedEntries.size() < 1 && !selectedEntries.contains(selectedEntry)) {
                 selectedEntries.add(selectedEntry);
                 button.setEnabled(false); // アイテムボタンを無効化
+                
+                // アイテムが選択された後に数値ボタンを無効化する
+                disableCardButtons();
                 updateSelectedLabel();
             }
 
@@ -239,7 +241,15 @@ public class NumeronGUI extends JFrame {
         selectedLabel.setText(sb.toString());
 
         // 数字が3桁選択されているか、または特定のアイテムが選択されているかをチェックしてOKボタンを有効化する
-        enableOkButton(selectedEntries.size() == 3 || (selectedEntries.contains("H&L") && selectedEntries.size() == 1) || (selectedEntries.contains("Sniper") && selectedEntries.size() == 1) || (selectedEntries.contains("Change") && selectedEntries.size() == 1));
+        enableOkButton(selectedEntries.size() == 3 || (selectedEntries.contains("H&L") && selectedEntries.size() == 1)
+                || (selectedEntries.contains("Sniper") && selectedEntries.size() == 1)
+                || (selectedEntries.contains("Change") && selectedEntries.size() == 1));
+    }
+    
+    private void disableCardButtons() {
+        for (JButton button : cardButtons) {
+            button.setEnabled(false);
+        }
     }
 
     private void updateInputField() {
